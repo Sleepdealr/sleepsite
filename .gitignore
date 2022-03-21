@@ -1,0 +1,6 @@
+postgres-data
+__pycache__
+venv
+.vscode
+static/images/*
+!static/images/.gitkeep

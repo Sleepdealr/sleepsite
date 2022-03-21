@@ -1,0 +1,169 @@
+html {
+    background-color: black;
+    font-family: 'Open Sans', sans-serif;
+    font-size: small;
+}
+
+body {
+    /* background: linear-gradient(red,orange,yellow,green,blue,indigo,violet); */
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    position: relative;
+    background: black; /* Change both background colors to white */
+}
+
+#wrapper {
+    background-color: #f1f3f3;
+    max-width: 974px;
+    min-width: 850px;
+    margin: auto;
+    margin-top: -10px;
+}
+
+header {
+    background-color: #f1f3f3;
+}
+
+
+#headerflex {
+    display: flex;
+}
+
+#headers {
+    flex-grow: 1;
+}
+
+header nav {
+    flex-grow: 1;
+    display: inline;
+}
+
+#externallinks {
+    background-color: black;
+    text-align: center;
+}
+
+#externallinks nav ul li a {
+    color: #f1f3f3;
+    font-size: smaller;
+}
+
+header div {
+    padding-left: 20px;
+    /* padding-bottom: 10px; */
+}
+
+nav ul {
+    margin: 0;
+    padding: 0;
+}
+
+nav li {
+    display: inline-block;
+    list-style-type: none;
+}
+
+nav a {
+    text-decoration: none;
+    display: block;
+    padding: 5px 6px 5px 6px;
+    color: black;
+}
+
+#TheTitle {
+    text-decoration: none;
+    color: black;
+}
+
+#TheTitle h1 {
+    padding-left: 6px;
+}
+
+#articles {
+    text-align: left;
+    background-color: white;
+}
+
+article section table {
+    font-family: monospace;
+}
+
+article section table td {
+    text-align: right;
+}
+
+#randomImage img {
+    max-width: 65%;
+}
+
+#content img {
+    max-width: 65%;
+}
+
+aside {
+    width: 30%;
+    padding-left: 15px;
+    margin-left: 15px;
+    float: right;
+}
+
+#tags {
+    font-size: xx-small;
+}
+
+.header_linker {
+    font-size: x-small;
+}
+
+blockquote span {
+    color: #789922;
+}
+
+blockquote span::before {
+    content: ">";
+}
+
+.running {
+    background-color: green;
+}
+
+.notRunning {
+    background-color: red;
+}
+
+header img {
+    max-height: 110px;
+}
+
+form #number_input {
+    width: 50px;
+    margin-left: 10px;
+}
+
+form #url_input {
+    margin-left: 10px;
+}
+
+body div div {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+footer {
+    padding: 300px 10px 5px 20px;
+    margin-bottom: 300px;
+    font-size: xx-small;
+}
+
+@media (max-width: 1023px) {
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    #wrapper {
+        min-width: 100%;
+        margin-top: 0;
+    }
+}

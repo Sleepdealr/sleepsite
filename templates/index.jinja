@@ -1,0 +1,13 @@
+{% extends "template.jinja" %}
+{% block content %}
+    <aside>
+        <section id="recent_thoughts">
+            <h4>Articles:</h4>
+            <ul>
+                <li><a href="asdasd">Sample article</a></li>
+                <li><a>Will be dynamically updated by Jinja</a></li>
+            </ul>
+        </section>
+    </aside>
+    {{ markdown }}
+{% endblock content %}
