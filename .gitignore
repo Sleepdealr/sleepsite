@@ -2,5 +2,22 @@ postgres-data
 __pycache__
 venv
 .vscode
+
 static/images/*
 !static/images/.gitkeep
+
+static/articles/*
+!static/articles/.gitkeep
+
+sleepweb.conf
+
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+sleepweb.conf

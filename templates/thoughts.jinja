@@ -1,0 +1,12 @@
+{% extends "template.jinja" %}
+{% block content %}
+    {% for category_name, thoughts in tree.items() %}
+        <h3 id="{{category_name.replace(' ', '_')}}">{{category_name}}</h3>
+        <dl>
+            {% for id_, title, dt in thoughts %}
+                <dt><a href="{{'/article?id=%i' % id_}}">{{title}}</a></dt>
+                <dd>{{dt}}</dd>
+            {% endfor %}
+        </dl>
+    {% endfor %}
+{% endblock %}

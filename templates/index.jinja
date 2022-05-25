@@ -4,10 +4,13 @@
         <section id="recent_thoughts">
             <h4>Articles:</h4>
             <ul>
-                <li><a href="asdasd">Sample article</a></li>
-                <li><a>Will be dynamically updated by Jinja</a></li>
+
+                {% for id_, title in featured_articles %}
+                    <li><a href="{{'/article?id=%i' % id_}}">{{title}}</a></li>
+                {% endfor %}
             </ul>
         </section>
     </aside>
+
     {{ markdown }}
 {% endblock content %}

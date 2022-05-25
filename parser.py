@@ -50,8 +50,8 @@ class HighlighterRenderer(misaka.SaferHtmlRenderer):
         # else:
         #     return "<h1>%s</h1>" % content
 
-def get_thought_from_id(db, id_):
-    category_name, title, dt, markdown = db.get_thought(id_)
+def get_article_from_id(db, id_):
+    category_name, title, dt, markdown = db.get_article(id_)
     return category_name, title, dt, parse_text(markdown)
 
 def parse_file(path):
@@ -141,14 +141,14 @@ def main():
     args = vars(p.parse_args())
 
     if "username" in args.keys():
-        args["password"] = getpass.getpass("Enter password for %s@%s: " % (args["username"], app.CONFIG["mysql"]["host"]))
+        args["password"] = getpass.getpass("Enter password for %s@%s: " % (args["username"], app.CONFIG["postgres"]["host"]))
 
     try:
         verb = sys.argv[1]
     except IndexError:
         print("No verb specified... Nothing to do... Exiting...")
         exit()
-    
+
     if verb in ["save", "export", "update", "list"]:
         with database.Database(
             safeLogin = False,
@@ -159,12 +159,12 @@ def main():
                 if db.add_category(args["category"]):
                     print("Added category...")
                 with open(args["markdown"], "r") as f:
-                    db.add_thought(args["category"], args["title"], f.read())
+                    db.add_article(args["category"], args["title"], f.read())
                 print("Added thought...")
 
             elif verb == "export":
                 with open(args["out"], "w") as f:
-                    f.writelines(db.get_thought(args["id"])[-1])
+                    f.writelines(db.get_article(args["id"])[-1])
                 print("Written to %s" % args["out"])
 
             elif verb == "update":
@@ -172,7 +172,7 @@ def main():
                     db.update_thought_markdown(args["id"], f.read())
 
             elif verb == "list":
-                for id_, title, dt, category_name in db.get_all_thoughts():
+                for id_, title, dt, category_name in db.get_all_articles():
                     print("%d\t%s\t%s\t%s" % (id_, title, dt, category_name))
 
     if verb == "preview":

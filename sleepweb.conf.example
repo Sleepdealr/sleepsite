@@ -1,0 +1,12 @@
+[name]
+user = Sleepdealer
+
+[postgres]
+host=10.1.1.109
+; port=5433 parses as int instead of str. very annoying
+user=
+password=
+database=
+
+[discord]
+username = @Sleepdealer#0001
