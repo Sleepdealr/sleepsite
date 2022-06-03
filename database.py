@@ -15,7 +15,7 @@ class Database:
         if self.safeLogin:
             self.__connection = psycopg2.connect(
                 **config["postgres"],
-                port='5433'
+                port='5432'
             )
         else:
             self.__connection = psycopg2.connect(
@@ -23,7 +23,7 @@ class Database:
                 password = self.passwd,
                 database = config["postgres"]["database"],
                 host = config["postgres"]["host"],
-                port = '5433'
+                port = '5432'
             )
         return self
 

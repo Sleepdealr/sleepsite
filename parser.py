@@ -11,7 +11,7 @@ import argparse
 import getpass
 import houdini
 import misaka
-import app
+import application as app
 import sys
 import re
 import os
