@@ -3,14 +3,11 @@ __pycache__
 venv
 .vscode
 
-static/images/*
-!static/images/.gitkeep
-
-static/articles/*
-!static/articles/.gitkeep
+markdown/
 
 sleepweb.conf
 
+*.DS_Store
 
 # Environments
 .env
@@ -20,4 +17,3 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-sleepweb.conf

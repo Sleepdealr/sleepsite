@@ -1,14 +1,8 @@
 itsdangerous==2.0.1
 PyMySQL==1.0.2
-python_qbittorrent==0.4.2
 Flask==2.1.0
-PiHole_api
-transmission-clutch
 dataclasses
-docker
-PiHole-api
-Pillow==8.1.0
-python-qbittorrent==0.4.2
+Pillow==9.2.0
 PyGithub
 lxml
 requests
@@ -17,3 +11,8 @@ waitress
 houdini.py
 Pygments
 mistune
+psycopg2-binary
+pygments==2.12.0
+misaka==2.1.1
+waitress==2.1.1
+paste==3.5.0
