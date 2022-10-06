@@ -53,9 +53,9 @@ def index():
     with database.Database() as db:
         with open(os.path.join("static", "index.md"), "r") as f:
             return flask.render_template(
-                "index.jinja",
+                "index.html.j2",
                 **get_template_items("Sleep's site :3 ", db),
-                markdown=parser.parse_text(f.read()),
+                markdown = parser.parse_text(f.read())[0],
                 featured_articles = db.get_featured_articles(),
 
             )
@@ -65,14 +65,14 @@ def get_article():
     thought_id = flask.request.args.get("id", type=int)
     with database.Database() as db:
         try:
-            category_name, title, dt, parsed = parser.get_article_from_id(db, thought_id)
+            category_name, title, dt, parsed , headers= parser.get_article_from_id(db, thought_id)
         except TypeError:
             flask.abort(404)
             return
         return flask.render_template_string(
-            '{% extends "template.jinja" %}\n{% block content %}\n' + parsed + '\n{% endblock %}',
+            "thought.html.j2",
             **get_template_items(title, db),
-            thought = True,
+            md_html = parsed,
             dt = "Published: " + str(dt),
             category = category_name,
             othercategories = db.get_categories_not(category_name),
@@ -91,7 +91,7 @@ def get_articles():
                 tree[category].append((id_, title, str(dt)))
 
         return flask.render_template(
-            "thoughts.jinja",
+            "thoughts.html.j2",
             **get_template_items("thoughts", db),
             tree = tree
         )
@@ -104,7 +104,7 @@ def robots():
 def discord():
     with database.Database() as db:
         return flask.render_template(
-            "discord.jinja",
+            "discord.html.j2",
             **get_template_items("discord", db),
             discord = CONFIG["discord"]["username"]
         )
@@ -124,21 +124,6 @@ def serve_image(filename):
         io_ = io.BytesIO()
         img.save(io_, format="JPEG")
         return flask.Response(io_.getvalue(), mimetype="image/jpeg")
-    else:
-        flask.abort(404)
-
-@app.route("/preview")
-def preview():
-    if "PREVIEW" in os.environ:
-        with database.Database() as db:
-            return flask.render_template_string(
-                 '{% extends "template.jinja" %}\n{% block content %}\n' + os.environ["PREVIEW"] + '\n{% endblock %}',
-                **get_template_items(os.environ["PREVIEW_TITLE"], db),
-                thought = True,
-                dt = "preview rendered: " + str(123),
-                category = os.environ["CATEGORY"],
-                othercategories = db.get_categories_not(os.environ["CATEGORY"])
-            )
     else:
         flask.abort(404)
 

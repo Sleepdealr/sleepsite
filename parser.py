@@ -2,30 +2,54 @@
 
 from urllib.parse import urlparse
 import urllib.parse
-import webbrowser
 import database
 import argparse
 import getpass
 import application as app
 import sys
-import os
 import mistune
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import html
+import lxml.etree
+import lxml.html
+import jinja2
 
 class HighlightRenderer(mistune.HTMLRenderer):
-    def block_code(self, code, lang=None):
-        if lang:
+    def blockcode(self, text, lang):
+        try:
             lexer = get_lexer_by_name(lang, stripall=True)
-            formatter = html.HtmlFormatter()
-            return highlight(code, lexer, formatter)
-        return '<pre><code>' + mistune.escape(code) + '</code></pre>'
+        except ClassNotFound:
+            lexer = None
 
+        if lexer:
+            formatter = HtmlFormatter()
+            return highlight(text, lexer, formatter)
+        # default
+        return '\n<pre><code>{}</code></pre>\n'.format(houdini.escape_html(text.strip()))
+
+    def block_quote(self, content):
+        content = content[3:-5] # idk why this is required...
+        out = '\n<blockquote>'
+        for line in houdini.escape_html(content.strip()).split("\n"):
+            out += '\n<span class="quote">{}</span><br>'.format(line)
+        return out + '\n</blockquote>'
+
+    def image(self, link, text, title):
+        return "<a href='%s' target='_blank'><img alt='%s' src='%s'></a>" % (
+            urlparse(link)._replace(query='').geturl(), text, link
+        )
+
+    def heading(self, text, level):
+        hash_ = urllib.parse.quote_plus(text)
+        return "<h%d id='%s'>%s <a class='header_linker' href='#%s'>[#]</a></h%d>" % (
+            level, hash_, text, hash_, level
+        )
 
 def get_article_from_id(db, id_):
     category_name, title, dt, markdown = db.get_article(id_)
-    return category_name, title, dt, parse_text(markdown)
+    html, headers = parse_text(markdown)
+    return category_name, title, dt, html, headers
 
 def parse_file(path):
     with open(path, "r") as f:
@@ -34,39 +58,53 @@ def parse_file(path):
     return parse_text(unformatted)
 
 def parse_text(unformatted):
-    # renderer = HighlighterRenderer()
-    # md = misaka.Markdown(renderer, extensions=('fenced-code', 'quote'))
-    markdown = mistune.create_markdown(renderer=HighlightRenderer())
-    return markdown(unformatted)
+    md = mistune.create_markdown(
+        renderer = HighlightRenderer(), 
+        plugins = ["strikethrough", "table", "url", "task_lists", "def_list"]
+    )
+    html = md(unformatted)
+    return html, get_headers(html)
 
-def preview_markdown(path, title, category):
-    def startBrowser():
-        # webbrowser.get("firefox").open("http://localhost:5000/preview")
-        webbrowser.open("http://localhost:5000/preview")
-        del os.environ["PREVIEW"]
-        del os.environ["PREVIEW_TITLE"]
-        del os.environ["CATEGORY"]
+def get_headers(html):
+    root = lxml.html.fromstring(html)
 
-    os.environ["PREVIEW"] = parse_file(path)
-    os.environ["PREVIEW_TITLE"] = title
-    os.environ["CATEGORY"] = category
-
-    import threading
-    threading.Timer(1.25, startBrowser ).start()
-
-    app.app.run(host = "0.0.0.0", debug = True)
+    headers = []
+    thesmallestlevel = 7
+    for node in root.xpath('//h1|//h2|//h3|//h4|//h5//h6'):
+        level = int(node.tag[-1])
+        if level < thesmallestlevel:
+            thesmallestlevel = level
+        headers.append((
+            # lxml.etree.tostring(node),
+            # "<p>%s</p>" % urllib.parse.unquote_plus(node.attrib["id"]),     # possibly insecure?
+            urllib.parse.unquote_plus(node.attrib["id"]),
+            level,                                              #   -horrible hack
+            "#%s" % node.attrib["id"])
+        )
+    
+    headers = [(i[0], i[1] - thesmallestlevel, i[2]) for i in headers]
+    # print(headers)
+    # there is a bug here-
+    # it must start with the largest header and only go up and down in increments of one
+    #       TODO: fix it!
+    md_template = jinja2.Template("""
+{% for text, depth, link in contents %}
+{{ "    " * depth }} - [{{ text }}]({{ link }})
+{% endfor %}
+    """)
+    
+    return mistune.html(md_template.render(contents = headers))
 
 def main():
     p = argparse.ArgumentParser()
     subparse = p.add_subparsers(help = "sub-command help")
     save_parser = subparse.add_parser("save", help = "Add a markdown file to the database")
-    preview_parser = subparse.add_parser("preview", help = "Preview a markdown render")
     echo_parser = subparse.add_parser("echo", help = "Print markdown render to stdout")
     update_parser = subparse.add_parser("update", help = "Replace a markdown file")
     export_parser = subparse.add_parser("export", help = "Export a database markdown file to disk")
     list_parser = subparse.add_parser("list", help = "List all the markdowns in the database")
 
-    for s in [save_parser, preview_parser, echo_parser, update_parser]:
+    for s in [save_parser, echo_parser, update_parser]:
         s.add_argument(
             "-m", "--markdown",
             help = "Path to a markdown file",
@@ -74,7 +112,7 @@ def main():
             required = True
         )
 
-    for s in [save_parser, preview_parser]:
+    for s in [save_parser]:
         s.add_argument(
             "-t", "--title",
             help = "Article title",
@@ -147,9 +185,6 @@ def main():
             elif verb == "list":
                 for id_, title, dt, category_name in db.get_all_articles():
                     print("%d\t%s\t%s\t%s" % (id_, title, dt, category_name))
-
-    if verb == "preview":
-        preview_markdown(args["markdown"], args["title"], args["category"])
 
     elif verb == "echo":
         print(parse_file(args["markdown"]))
