@@ -11,10 +11,11 @@
                 <div id="externallinks">
                     <nav>
                         <ul>
-                            <li><a href="/discord" target="_self">Discord</a></li>
-                            <li><a href="https://github.com/Sleepdealr/" target="_blank">Github</a></li>
-                            <li><a href="https://last.fm/user/Sleepdealr/" target="_blank">Last.fm</a></li>
-                            <li><a href="https://steamcommunity.com/id/Sleepdealr" target="_blank">Steam</a></li>
+                            {% for name, link in links %}
+                            <li>
+                                <a href="{{link}}">{{name}}</a>
+                            </li>
+                            {% endfor %}
                         </ul>
                     </nav>
                 </div>
@@ -25,7 +26,11 @@
                         </a>
                         <nav id="articles">
                             <ul>
-                                <li>sample article</li>
+                                {% for name, link in articles %}
+                                <li>
+                                    <a href="{{link}}">{{name}}</a>
+                                </li>
+                                {% endfor %}
                             </ul>
                         </nav>
                     </div>
