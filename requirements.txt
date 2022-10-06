@@ -8,11 +8,8 @@ lxml
 requests
 PasteScript==3.2.0
 waitress
-houdini.py
-Pygments
-mistune
 psycopg2-binary
-pygments==2.12.0
-misaka==2.1.1
+pygments==2.13.0
 waitress==2.1.1
 paste==3.5.0
+mistune==3.0.0rc1

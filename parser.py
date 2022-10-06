@@ -1,54 +1,27 @@
 #!/usr/bin/env python3
 
 from urllib.parse import urlparse
-from pygments import highlight
-from pygments.formatters import HtmlFormatter, ClassNotFound
-from pygments.lexers import get_lexer_by_name
 import urllib.parse
 import webbrowser
 import database
 import argparse
 import getpass
-import houdini
-import misaka
 import application as app
 import sys
-import re
 import os
+import mistune
+from pygments import highlight
+from pygments.lexers import get_lexer_by_name
+from pygments.formatters import html
 
-class HighlighterRenderer(misaka.SaferHtmlRenderer):
-    def blockcode(self, text, lang):
-        try:
+class HighlightRenderer(mistune.HTMLRenderer):
+    def block_code(self, code, lang=None):
+        if lang:
             lexer = get_lexer_by_name(lang, stripall=True)
-        except ClassNotFound:
-            lexer = None
+            formatter = html.HtmlFormatter()
+            return highlight(code, lexer, formatter)
+        return '<pre><code>' + mistune.escape(code) + '</code></pre>'
 
-        if lexer:
-            formatter = HtmlFormatter()
-            return highlight(text, lexer, formatter)
-        # default
-        return '\n<pre><code>{}</code></pre>\n'.format(houdini.escape_html(text.strip()))
-
-    def blockquote(self, content):
-        content = content[3:-5] # idk why this is required...
-        out = '\n<blockquote>'
-        for line in houdini.escape_html(content.strip()).split("\n"):
-            out += '\n<span class="quote">{}</span><br>'.format(line)
-        return out + '\n</blockquote>'
-
-    def image(self, link, title, alt):
-        return "<a href='%s' target='_blank'><img alt='%s' src='%s'></a>" % (
-            urlparse(link)._replace(query='').geturl(), alt, link
-        )
-
-    def header(self, content, level):
-        # if level > 1:
-        hash_ = urllib.parse.quote_plus(content)
-        return "<h%d id='%s'>%s <a class='header_linker' href='#%s'>[#]</a></h%d>" % (
-            level, hash_, content, hash_, level
-        )
-        # else:
-        #     return "<h1>%s</h1>" % content
 
 def get_article_from_id(db, id_):
     category_name, title, dt, markdown = db.get_article(id_)
@@ -61,10 +34,10 @@ def parse_file(path):
     return parse_text(unformatted)
 
 def parse_text(unformatted):
-    renderer = HighlighterRenderer()
-    md = misaka.Markdown(renderer, extensions=('fenced-code', 'quote'))
-
-    return md(unformatted)
+    # renderer = HighlighterRenderer()
+    # md = misaka.Markdown(renderer, extensions=('fenced-code', 'quote'))
+    markdown = mistune.create_markdown(renderer=HighlightRenderer())
+    return markdown(unformatted)
 
 def preview_markdown(path, title, category):
     def startBrowser():
