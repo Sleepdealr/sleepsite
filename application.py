@@ -32,11 +32,13 @@ def get_correct_article_headers(db:database.Database, title):
 
 def get_template_items(title, db):
     return {
+        "links": db.get_header_links(),
+        "image": get_pfp_img(db),
         "title": title,
-        "image": get_pfp_image(db),
+        "articles": get_correct_article_headers(db, title)
     }
 
-def get_pfp_image(db:database.Database):
+def get_pfp_img(db:database.Database):
     global shown_images
     dbimg = db.get_pfp_images()
     if len(shown_images) == len(dbimg):
@@ -57,26 +59,26 @@ def index():
                 **get_template_items("Sleep's site :3 ", db),
                 markdown = parser.parse_text(f.read())[0],
                 featured_articles = db.get_featured_articles(),
-
             )
 
 @app.route("/article")
 def get_article():
-    thought_id = flask.request.args.get("id", type=int)
+    article_id = flask.request.args.get("id", type=int)
     with database.Database() as db:
         try:
-            category_name, title, dt, parsed , headers= parser.get_article_from_id(db, thought_id)
+            category_name, title, dt, parsed, headers = parser.get_article_from_id(db, article_id)
         except TypeError:
             flask.abort(404)
             return
-        return flask.render_template_string(
-            "thought.html.j2",
+        return flask.render_template(
+            "article.html.j2",
             **get_template_items(title, db),
             md_html = parsed,
-            dt = "Published: " + str(dt),
+            contents_html = headers,
+            dt = "published: " + str(dt),
             category = category_name,
             othercategories = db.get_categories_not(category_name),
-            related = db.get_similar_articles(category_name, thought_id)
+            related = db.get_similar_articles(category_name, article_id)
         )
 
 @app.route("/articles")
@@ -91,8 +93,8 @@ def get_articles():
                 tree[category].append((id_, title, str(dt)))
 
         return flask.render_template(
-            "thoughts.html.j2",
-            **get_template_items("thoughts", db),
+            "articles.html.j2",
+            **get_template_items("articles", db),
             tree = tree
         )
 

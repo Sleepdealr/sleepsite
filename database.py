@@ -30,11 +30,21 @@ class Database:
     def __exit__(self, type, value, traceback):
         self.__connection.close()
 
+    def get_header_links(self):
+        with self.__connection.cursor() as cursor:
+            cursor.execute("SELECT name, link FROM headerLinks ORDER BY name;")
+            return cursor.fetchall()
+
+
+    def get_header_articles(self):
+        with self.__connection.cursor() as cursor:
+            cursor.execute("SELECT articleName, link FROM headerArticles;")
+            return cursor.fetchall()
+
     def get_pfp_images(self):
         with self.__connection.cursor() as cursor:
             cursor.execute("SELECT alt, url FROM images WHERE pfp_image = true")
             xyz = cursor.fetchall()
-            print(xyz)
             return xyz
 
     def add_article(self, category, title, markdown):
@@ -49,7 +59,7 @@ class Database:
     def get_article(self, id_):
         with self.__connection.cursor() as cursor:
             cursor.execute("""
-            SELECT categories.category_name, articles.title, dt, markdown_text
+            SELECT categories.category_name, articles.title, articles.dt, articles.markdown_text
             FROM articles INNER JOIN categories
             ON articles.category_id = categories.category_id
             WHERE article_id = %s;""", (id_, ))

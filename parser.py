@@ -10,10 +10,11 @@ import sys
 import mistune
 from pygments import highlight
 from pygments.lexers import get_lexer_by_name
-from pygments.formatters import html
+from pygments.formatters import html, HtmlFormatter, ClassNotFound
 import lxml.etree
 import lxml.html
 import jinja2
+import houdini
 
 class HighlightRenderer(mistune.HTMLRenderer):
     def blockcode(self, text, lang):
@@ -29,16 +30,11 @@ class HighlightRenderer(mistune.HTMLRenderer):
         return '\n<pre><code>{}</code></pre>\n'.format(houdini.escape_html(text.strip()))
 
     def block_quote(self, content):
-        content = content[3:-5] # idk why this is required...
+        content = content[3:-5]
         out = '\n<blockquote>'
         for line in houdini.escape_html(content.strip()).split("\n"):
             out += '\n<span class="quote">{}</span><br>'.format(line)
         return out + '\n</blockquote>'
-
-    def image(self, link, text, title):
-        return "<a href='%s' target='_blank'><img alt='%s' src='%s'></a>" % (
-            urlparse(link)._replace(query='').geturl(), text, link
-        )
 
     def heading(self, text, level):
         hash_ = urllib.parse.quote_plus(text)
