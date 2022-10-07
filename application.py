@@ -1,5 +1,4 @@
-from flask import Flask
-from markupsafe import escape
+from flask import Flask, redirect
 from paste.translogger import TransLogger
 from waitress import serve
 from PIL import Image
@@ -13,7 +12,6 @@ import parser
 import database
 import random
 
-
 app = Flask(__name__)
 CONFIG = configparser.ConfigParser()
 CONFIG.read("sleepweb.conf")
@@ -26,9 +24,9 @@ def get_correct_article_headers(db:database.Database, title):
         for i in db_headers:
             if i[0] != title:
                 out.append(i)
-        return out + [("index", "/~")]
+        return out + [("Index", "/~")]
     else:
-        return db_headers + [("index", "/~")]
+        return db_headers + [("Index", "/~")]
 
 def get_template_items(title, db):
     return {
@@ -75,7 +73,7 @@ def get_article():
             **get_template_items(title, db),
             md_html = parsed,
             contents_html = headers,
-            dt = "published: " + str(dt),
+            dt = "Published: " + str(dt),
             category = category_name,
             othercategories = db.get_categories_not(category_name),
             related = db.get_similar_articles(category_name, article_id)
@@ -94,13 +92,22 @@ def get_articles():
 
         return flask.render_template(
             "articles.html.j2",
-            **get_template_items("articles", db),
+            **get_template_items("Articles", db),
             tree = tree
         )
 
 @app.route("/robots.txt")
 def robots():
     return flask.send_from_directory("static", "robots.txt")
+
+@app.route('/<string:param>')
+def redirect_code(param):
+    with database.Database() as db:
+        url = db.get_redirect_url(param)
+        if url is not None:
+            return redirect(url[0])
+        flask.abort(404)
+        return
 
 @app.route("/discord")
 def discord():

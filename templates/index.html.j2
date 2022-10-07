@@ -2,7 +2,7 @@
 {% block content %}
     <aside>
         <section id="recent_thoughts">
-            <h4>Articles:</h4>
+            <h4>Featured articles:</h4>
             <ul>
 
                 {% for id_, title in featured_articles %}
@@ -11,6 +11,5 @@
             </ul>
         </section>
     </aside>
-
     {{ markdown }}
 {% endblock content %}

@@ -119,6 +119,13 @@ class Database:
             cursor.execute("SELECT category_name FROM categories WHERE category_name != %s;", (category_name, ))
             return [i[0] for i in cursor.fetchall()]
 
+    def get_redirect_url(self, redirect_name):
+        with self.__connection.cursor() as cursor:
+            cursor.execute("""
+            SELECT url FROM redirects WHERE name = %s;
+            """, (redirect_name,))
+            return cursor.fetchone()
+
     def get_image(self, imageName):
         return "xyz"
 
