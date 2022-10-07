@@ -1,5 +1,6 @@
 import configparser
 from dataclasses import dataclass
+import datetime
 import psycopg2
 
 #make it work with postgres
@@ -50,10 +51,10 @@ class Database:
     def add_article(self, category, title, markdown):
         with self.__connection.cursor() as cursor:
             cursor.execute("""
-            INSERT INTO articles (category_id, title, markdown_text)
+            INSERT INTO articles (category_id, title, markdown_text, dt)
             VALUES ((
                 SELECT category_id FROM categories WHERE category_name = %s
-            ), %s, %s);""", (category, title, markdown))
+            ), %s, %s, %s);""", (category, title, markdown, datetime.datetime.now()))
         self.__connection.commit()
 
     def get_article(self, id_):

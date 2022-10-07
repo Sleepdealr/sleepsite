@@ -22,8 +22,7 @@ def get_correct_article_headers(db:database.Database, title):
     if title in [i[0] for i in db_headers]:
         out = []
         for i in db_headers:
-            if i[0] != title:
-                out.append(i)
+            out.append(i) # fix duplicates later
         return out + [("Index", "/~")]
     else:
         return db_headers + [("Index", "/~")]
@@ -54,7 +53,7 @@ def index():
         with open(os.path.join("static", "index.md"), "r") as f:
             return flask.render_template(
                 "index.html.j2",
-                **get_template_items("Sleep's site :3 ", db),
+                **get_template_items("sleepdealer's site", db),
                 markdown = parser.parse_text(f.read())[0],
                 featured_articles = db.get_featured_articles(),
             )
