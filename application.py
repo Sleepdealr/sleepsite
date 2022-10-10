@@ -32,7 +32,7 @@ def get_template_items(title, db):
         "links": db.get_header_links(),
         "image": get_pfp_img(db),
         "title": title,
-        "articles": get_correct_article_headers(db, title)
+        "articles": get_correct_article_headers(db, title),
     }
 
 def get_pfp_img(db:database.Database):
@@ -63,7 +63,7 @@ def get_article():
     article_id = flask.request.args.get("id", type=int)
     with database.Database() as db:
         try:
-            category_name, title, dt, parsed, headers = parser.get_article_from_id(db, article_id)
+            category_name, title, dt, parsed, headers, embed_d, embed_i = parser.get_article_from_id(db, article_id)
         except TypeError:
             flask.abort(404)
             return
@@ -75,7 +75,9 @@ def get_article():
             dt = "Published: " + str(dt),
             category = category_name,
             othercategories = db.get_categories_not(category_name),
-            related = db.get_similar_articles(category_name, article_id)
+            related = db.get_similar_articles(category_name, article_id),
+            embed_desc = embed_d,
+            embed_img = embed_i 
         )
 
 @app.route("/articles")

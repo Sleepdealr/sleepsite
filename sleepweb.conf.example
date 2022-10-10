@@ -3,7 +3,7 @@ user = Sleepdealer
 
 [postgres]
 host=10.1.1.109
-; port=5433 parses as int instead of str. very annoying
+; port=5433 doesn't work. fix later
 user=
 password=
 database=

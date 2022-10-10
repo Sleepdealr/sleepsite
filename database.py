@@ -3,10 +3,9 @@ from dataclasses import dataclass
 import datetime
 import psycopg2
 
-#make it work with postgres
 @dataclass
 class Database:
-    safeLogin: bool = True # Autologin with the user in conf file. Conf file is intentionally read only
+    safeLogin: bool = True
     user: str = None
     passwd: str = None
 
@@ -60,7 +59,7 @@ class Database:
     def get_article(self, id_):
         with self.__connection.cursor() as cursor:
             cursor.execute("""
-            SELECT categories.category_name, articles.title, articles.dt, articles.markdown_text
+            SELECT categories.category_name, articles.title, articles.dt, articles.markdown_text, articles.embed_desc, articles.embed_img
             FROM articles INNER JOIN categories
             ON articles.category_id = categories.category_id
             WHERE article_id = %s;""", (id_, ))

@@ -43,9 +43,9 @@ class HighlightRenderer(mistune.HTMLRenderer):
         )
 
 def get_article_from_id(db, id_):
-    category_name, title, dt, markdown = db.get_article(id_)
+    category_name, title, dt, markdown, embed_desc, embed_img = db.get_article(id_)
     html, headers = parse_text(markdown)
-    return category_name, title, dt, html, headers
+    return category_name, title, dt, html, headers, embed_desc, embed_img
 
 def parse_file(path):
     with open(path, "r") as f:
