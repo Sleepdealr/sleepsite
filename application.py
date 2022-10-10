@@ -53,7 +53,7 @@ def index():
         with open(os.path.join("static", "index.md"), "r") as f:
             return flask.render_template(
                 "index.html.j2",
-                **get_template_items("sleepdealer's site", db),
+                **get_template_items("Index", db),
                 markdown = parser.parse_text(f.read())[0],
                 featured_articles = db.get_featured_articles(),
             )
