@@ -36,9 +36,9 @@ class Database:
             return cursor.fetchall()
 
 
-    def get_header_articles(self):
+    def get_header_articles(self, title):
         with self.__connection.cursor() as cursor:
-            cursor.execute("SELECT articleName, link FROM headerArticles;")
+            cursor.execute("SELECT articleName, link FROM headerArticles WHERE articleName NOT LIKE %s;", (title, ))
             return cursor.fetchall()
 
     def get_pfp_images(self):

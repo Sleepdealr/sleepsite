@@ -17,22 +17,12 @@ CONFIG = configparser.ConfigParser()
 CONFIG.read("sleepweb.conf")
 shown_images = set()
 
-def get_correct_article_headers(db:database.Database, title):
-    db_headers = list(db.get_header_articles())
-    if title in [i[0] for i in db_headers]:
-        out = []
-        for i in db_headers:
-            out.append(i) # fix duplicates later
-        return out + [("Index", "/~")]
-    else:
-        return db_headers + [("Index", "/~")]
-
 def get_template_items(title, db):
     return {
         "links": db.get_header_links(),
         "image": get_pfp_img(db),
         "title": title,
-        "articles": get_correct_article_headers(db, title),
+        "articles": list(db.get_header_articles(title)),
     }
 
 def get_pfp_img(db:database.Database):
