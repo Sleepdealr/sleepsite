@@ -4,6 +4,7 @@
         <meta name="abuseipdb-verification" content="3IuG6dik" />
         <link rel='stylesheet' href="{{ url_for('static', filename='style.css')}}"/>
         <title>sleepdealer.xyz :: {{ title }}</title>
+        <meta property="og:type" content="website" />
         <meta property="og:title"content="Sleepdealer's Site" />
         <meta property="og:url" content="{{ url_for(request.endpoint, **request.view_args) }}" />
         <meta content="#FFB6C1" data-react-helmet="true" name="theme-color" />
@@ -11,7 +12,8 @@
             <meta property="og:description" content="{{ embed_desc }}" /> 
         {% endif %}
         {%if embed_img %}
-            <meta property="og:image" content="{{ embed_img }}" />> 
+            <meta property="twitter:card" content="summary_large_image">
+            <meta property="twitter:image" content="{{ embed_img }}" />
         {% endif %}
     </head>
     <body>
