@@ -5,7 +5,7 @@
         <link rel='stylesheet' href="{{ url_for('static', filename='style.css')}}"/>
         <title>sleepdealer.xyz :: {{ title }}</title>
         <meta property="og:type" content="website" />
-        <meta property="og:title"content="Sleepdealer's Site" />
+        <meta property="og:title"content="Sleepdealer's Pharmacy :: {{ title }}" />
         <meta property="og:url" content="{{ url_for(request.endpoint, **request.view_args) }}" />
         <meta content="#FFB6C1" data-react-helmet="true" name="theme-color" />
         {%if embed_desc %}
