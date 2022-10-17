@@ -49,7 +49,7 @@ def index():
             )
 
 @app.route("/article")
-def get_article():
+def get_article_from_id():
     article_id = flask.request.args.get("id", type=int)
     with database.Database() as db:
         try:
@@ -65,7 +65,7 @@ def get_article():
             dt = "Published: " + str(dt),
             category = category_name,
             othercategories = db.get_categories_not(category_name),
-            related = db.get_similar_articles(category_name, article_id),
+            related = db.get_similar_articles_from_id(category_name, article_id),
             embed_desc = embed_d,
             embed_img = embed_i 
         )
@@ -126,6 +126,27 @@ def serve_image(filename):
         return flask.Response(io_.getvalue(), mimetype="image/jpeg")
     else:
         flask.abort(404)
+
+@app.route("/article/<string:name>")
+def get_article_from_name(name):
+    with database.Database() as db:
+        try:
+            category_name, title, dt, parsed, headers, embed_d, embed_i = parser.get_article_from_name(db, name)
+        except TypeError:
+            flask.abort(404)
+            return
+        return flask.render_template(
+            "article.html.j2",
+            **get_template_items(title, db),
+            md_html = parsed,
+            contents_html = headers,
+            dt = "Published: " + str(dt),
+            category = category_name,
+            othercategories = db.get_categories_not(category_name),
+            related = db.get_similar_articles_from_name(category_name, name),
+            embed_desc = embed_d,
+            embed_img = embed_i 
+        )
 
 if __name__ == "__main__":
     try:

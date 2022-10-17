@@ -56,7 +56,7 @@ class Database:
             ), %s, %s, %s);""", (category, title, markdown, datetime.datetime.now()))
         self.__connection.commit()
 
-    def get_article(self, id_):
+    def get_article_from_id(self, id_):
         with self.__connection.cursor() as cursor:
             cursor.execute("""
             SELECT categories.category_name, articles.title, articles.dt, articles.markdown_text, articles.embed_desc, articles.embed_img
@@ -65,14 +65,14 @@ class Database:
             WHERE article_id = %s;""", (id_, ))
             return cursor.fetchone()
 
-    def get_similar_articles(self, category, id_):
+    def get_article_from_name(self, name):
         with self.__connection.cursor() as cursor:
             cursor.execute("""
-            SELECT article_id, title, category_name FROM articles
-            INNER JOIN categories ON articles.category_id = categories.category_id
-            WHERE category_name = %s AND article_id != %s;""",
-            (category, id_))
-            return cursor.fetchall()
+            SELECT categories.category_name, articles.title, articles.dt, articles.markdown_text, articles.embed_desc, articles.embed_img
+            FROM articles INNER JOIN categories
+            ON articles.category_id = categories.category_id
+            WHERE lower(title) = %s;""", (name, ))
+            return cursor.fetchone()
 
     def get_featured_articles(self):
         with self.__connection.cursor() as cursor:
@@ -92,13 +92,22 @@ class Database:
             return True
         return False
 
-    def get_similar_articles(self, category, id_):
+    def get_similar_articles_from_id(self, category, id_):
         with self.__connection.cursor() as cursor:
             cursor.execute("""
             SELECT article_id, title, dt, category_name FROM articles
             INNER JOIN categories ON articles.category_id = categories.category_id
             WHERE category_name = %s AND article_id != %s;""",
             (category, id_))
+            return cursor.fetchall()
+
+    def get_similar_articles_from_name(self, category, name_):
+        with self.__connection.cursor() as cursor:
+            cursor.execute("""
+            SELECT article_id, title, dt, category_name FROM articles
+            INNER JOIN categories ON articles.category_id = categories.category_id
+            WHERE category_name = %s AND lower(title) != %s;""",
+            (category, name_))
             return cursor.fetchall()
 
     def get_all_articles(self):

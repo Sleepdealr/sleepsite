@@ -43,7 +43,12 @@ class HighlightRenderer(mistune.HTMLRenderer):
         )
 
 def get_article_from_id(db, id_):
-    category_name, title, dt, markdown, embed_desc, embed_img = db.get_article(id_)
+    category_name, title, dt, markdown, embed_desc, embed_img = db.get_article_from_id(id_)
+    html, headers = parse_text(markdown)
+    return category_name, title, dt, html, headers, embed_desc, embed_img
+
+def get_article_from_name(db, name):
+    category_name, title, dt, markdown, embed_desc, embed_img = db.get_article_from_name(name)
     html, headers = parse_text(markdown)
     return category_name, title, dt, html, headers, embed_desc, embed_img
 
@@ -171,7 +176,7 @@ def main():
 
             elif verb == "export":
                 with open(args["out"], "w") as f:
-                    f.writelines(db.get_article(args["id"])[-1])
+                    f.writelines(db.get_article_from_id(args["id"])[-1])
                 print("Written to %s" % args["out"])
 
             elif verb == "update":
