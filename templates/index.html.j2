@@ -6,7 +6,7 @@
             <ul>
 
                 {% for id_, title in featured_articles %}
-                    <li><a href="{{'/article?id=%i' % id_}}">{{title}}</a></li>
+                    <li><a href="{{'/article/%s' % title.lower()}}">{{title}}</a></li>
                 {% endfor %}
             </ul>
         </section>

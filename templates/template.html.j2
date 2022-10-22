@@ -63,7 +63,7 @@
                     <ul>
                         {% for id_, title, dt, category in related %}
                             <li>
-                                <a href="{{'/article?id=%i' % id_ }}">{{ title }}</a>
+                                <a href="{{'/article/%s' % title.lower() }}">{{ title }}</a>
                             </li>
                         {% endfor %}
                     </ul>

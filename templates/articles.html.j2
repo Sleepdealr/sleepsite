@@ -4,7 +4,7 @@
         <h3 id="{{category_name.replace(' ', '_')}}">{{category_name}}</h3>
         <dl>
             {% for id_, title, dt in thoughts %}
-                <dt><a href="{{'/article?id=%i' % id_}}">{{title}}</a></dt>
+                <dt><a href="{{'/article/%s' % title.lower()}}">{{title}}</a></dt>
                 <dd>{{dt}}</dd>
             {% endfor %}
         </dl>

@@ -1,4 +1,4 @@
-from flask import Flask, redirect
+from flask import Flask, redirect, request
 from paste.translogger import TransLogger
 from waitress import serve
 from PIL import Image
@@ -129,6 +129,7 @@ def serve_image(filename):
 
 @app.route("/article/<string:name>")
 def get_article_from_name(name):
+    name = str.lower(name)
     with database.Database() as db:
         try:
             category_name, title, dt, parsed, headers, embed_d, embed_i = parser.get_article_from_name(db, name)

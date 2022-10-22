@@ -15,7 +15,7 @@
         <h5>related articles:</h5>
         <ul>
             {% for id_, title, dt, category in related %}
-                <li><a href="{{'/article?id=%i' % id_}}">{{title}}</a></li>
+                <li><a href="{{'/article/%s' % title.lower()}}">{{title}}</a></li>
             {% endfor %}
         </ul>
         <h5>other categories:</h5>
