@@ -132,8 +132,9 @@ blockquote span::before {
     background-color: red;
 }
 
+/* pfp size */
 header img {
-    max-height: 110px;
+    max-height: 150px;
 }
 
 form #number_input {
