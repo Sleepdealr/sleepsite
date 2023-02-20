@@ -17,6 +17,7 @@ CONFIG = configparser.ConfigParser()
 CONFIG.read("sleepweb.conf")
 shown_images = set()
 
+
 def get_template_items(title, db):
     return {
         "links": db.get_header_links(),
@@ -25,7 +26,8 @@ def get_template_items(title, db):
         "articles": list(db.get_header_articles(title)),
     }
 
-def get_pfp_img(db:database.Database):
+
+def get_pfp_img(db: database.Database):
     global shown_images
     dbimg = db.get_pfp_images()
     if len(shown_images) == len(dbimg):
@@ -44,9 +46,10 @@ def index():
             return flask.render_template(
                 "index.html.j2",
                 **get_template_items("Index", db),
-                markdown = parser.parse_text(f.read())[0],
-                featured_articles = db.get_featured_articles(),
+                markdown=parser.parse_text(f.read())[0],
+                featured_articles=db.get_featured_articles(),
             )
+
 
 @app.route("/article")
 def get_article_from_id():
@@ -60,15 +63,16 @@ def get_article_from_id():
         return flask.render_template(
             "article.html.j2",
             **get_template_items(title, db),
-            md_html = parsed,
-            contents_html = headers,
-            dt = "Published: " + str(dt),
-            category = category_name,
-            othercategories = db.get_categories_not(category_name),
-            related = db.get_similar_articles_from_id(category_name, article_id),
-            embed_desc = embed_d,
-            embed_img = embed_i 
+            md_html=parsed,
+            contents_html=headers,
+            dt="Published: " + str(dt),
+            category=category_name,
+            othercategories=db.get_categories_not(category_name),
+            related=db.get_similar_articles_from_id(category_name, article_id),
+            embed_desc=embed_d,
+            embed_img=embed_i
         )
+
 
 @app.route("/articles")
 def get_articles():
@@ -84,12 +88,14 @@ def get_articles():
         return flask.render_template(
             "articles.html.j2",
             **get_template_items("Articles", db),
-            tree = tree
+            tree=tree
         )
+
 
 @app.route("/robots.txt")
 def robots():
     return flask.send_from_directory("static", "robots.txt")
+
 
 @app.route('/<string:param>')
 def redirect_code(param):
@@ -100,14 +106,16 @@ def redirect_code(param):
         flask.abort(404)
         return
 
+
 @app.route("/discord")
 def discord():
     with database.Database() as db:
         return flask.render_template(
             "discord.html.j2",
             **get_template_items("discord", db),
-            discord = CONFIG["discord"]["username"]
+            discord=CONFIG["discord"]["username"]
         )
+
 
 @app.route("/img/<filename>")
 def serve_image(filename):
@@ -127,6 +135,7 @@ def serve_image(filename):
     else:
         flask.abort(404)
 
+
 @app.route("/article/<string:name>")
 def get_article_from_name(name):
     name = str.lower(name)
@@ -139,21 +148,22 @@ def get_article_from_name(name):
         return flask.render_template(
             "article.html.j2",
             **get_template_items(title, db),
-            md_html = parsed,
-            contents_html = headers,
-            dt = "Published: " + str(dt),
-            category = category_name,
-            othercategories = db.get_categories_not(category_name),
-            related = db.get_similar_articles_from_name(category_name, name),
-            embed_desc = embed_d,
-            embed_img = embed_i 
+            md_html=parsed,
+            contents_html=headers,
+            dt="Published: " + str(dt),
+            category=category_name,
+            othercategories=db.get_categories_not(category_name),
+            related=db.get_similar_articles_from_name(category_name, name),
+            embed_desc=embed_d,
+            embed_img=embed_i
         )
+
 
 if __name__ == "__main__":
     try:
         if sys.argv[1] == "--production":
-            serve(TransLogger(app), host='0.0.0.0', port = 6969, threads = 2)
+            serve(TransLogger(app), host='0.0.0.0', port=6969, threads=2)
         else:
-            app.run(host = "0.0.0.0", port = 5001, debug = True)
+            app.run(host="0.0.0.0", port=5001, debug=True)
     except IndexError:
-        app.run(host = "0.0.0.0", port = 5001, debug = True)
+        app.run(host="0.0.0.0", port=5001, debug=True)

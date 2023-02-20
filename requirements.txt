@@ -1,9 +1,7 @@
 itsdangerous==2.0.1
-PyMySQL==1.0.2
 Flask==2.1.0
 dataclasses
 Pillow==9.2.0
-PyGithub
 lxml
 requests
 PasteScript==3.2.0
