@@ -51,8 +51,10 @@ class Database:
         with self.__connection.cursor() as cursor:
             cursor.execute("""
             INSERT INTO articles (article_id, category_id, title, markdown_text, dt)
-            VALUES ( (SELECT MAX(article_id) + 1 FROM articles ), %s, %s, %s, %s);""",
-                           (category, title, markdown, datetime.datetime.now().replace(microsecond=0)))
+            VALUES ( 
+                (SELECT MAX(article_id) + 1 FROM articles ), 
+                (SELECT category_id FROM categories WHERE category_name = %s),
+                 %s, %s, %s);""", (category, title, markdown, datetime.datetime.now().replace(microsecond=0)))
         self.__connection.commit()
 
     def get_article_from_name(self, name):

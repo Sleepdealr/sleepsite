@@ -1,13 +1,13 @@
-# hi i'm sleepdealer
+# Hi, I'm Sleepdealer
 
-i program stuff and make keyboards work.
+I program stuff sometimes and make keyboards work
 
-this website was made with Flask and Jinja, with a Postgres DB
+This website was made with Flask and Jinja, with a Postgres DB. All text is written in markdown
 
-all text is written in markdown, this is the only static text
+Thanks for visiting my site, I really appreciate it
 
 ## keyboards
 
-visit <https://sleepdealer.xyz/article/portfolio> for my previous works
+PCBs I designed: <https://sleepdealer.xyz/article/portfolio>
 
-i have some photos of my collection here: <https://sleepdealer.xyz/article/collection>
+Some photos of my collection: <https://sleepdealer.xyz/article/collection>

@@ -5,7 +5,6 @@ Pillow==9.2.0
 lxml
 requests
 PasteScript==3.2.0
-waitress
 psycopg2-binary
 pygments==2.13.0
 waitress==2.1.1

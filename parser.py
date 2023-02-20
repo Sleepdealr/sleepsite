@@ -106,21 +106,19 @@ def main():
             required=True
         )
 
-    for s in [update_parser]:
-        s.add_argument(
-            "-i", "--id",
-            help="Article's id",
-            type=int,
-            required=True
-        )
+    update_parser.add_argument(
+        "-i", "--id",
+        help="Article's id",
+        type=int,
+        required=True
+    )
 
-    for s in [save_parser]:
-        s.add_argument(
-            "-c", "--category",
-            help="Article category ID",
-            type=str,
-            required=True
-        )
+    save_parser.add_argument(
+        "-c", "--category",
+        help="Article category name",
+        type=str,
+        required=True
+    )
 
     save_parser.add_argument(
         "-t", "--title",
@@ -137,7 +135,7 @@ def main():
         print("No verb specified... Nothing to do... Exiting...")
         exit()
 
-    if verb in ["save", "export", "update", "list"]:
+    if verb in ["save", "update", "list"]:
         with database.Database() as db:
             if verb == "save":
                 if db.add_category(args["category"]):
