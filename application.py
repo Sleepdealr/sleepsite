@@ -1,9 +1,8 @@
-from flask import Flask, redirect, request
+from flask import Flask, redirect
 from paste.translogger import TransLogger
 from waitress import serve
 from PIL import Image
 import configparser
-import database
 import sys
 import io
 import os
@@ -49,29 +48,6 @@ def index():
                 markdown=parser.parse_text(f.read())[0],
                 featured_articles=db.get_featured_articles(),
             )
-
-
-@app.route("/article")
-def get_article_from_id():
-    article_id = flask.request.args.get("id", type=int)
-    with database.Database() as db:
-        try:
-            category_name, title, dt, parsed, headers, embed_d, embed_i = parser.get_article_from_id(db, article_id)
-        except TypeError:
-            flask.abort(404)
-            return
-        return flask.render_template(
-            "article.html.j2",
-            **get_template_items(title, db),
-            md_html=parsed,
-            contents_html=headers,
-            dt="Published: " + str(dt),
-            category=category_name,
-            othercategories=db.get_categories_not(category_name),
-            related=db.get_similar_articles_from_id(category_name, article_id),
-            embed_desc=embed_d,
-            embed_img=embed_i
-        )
 
 
 @app.route("/articles")
@@ -141,7 +117,7 @@ def get_article_from_name(name):
     name = str.lower(name)
     with database.Database() as db:
         try:
-            category_name, title, dt, parsed, headers, embed_d, embed_i = parser.get_article_from_name(db, name)
+            category_name, title, dt, parsed, headers, embed_d, embed_i, updt = parser.get_article_from_name(db, name)
         except TypeError:
             flask.abort(404)
             return
@@ -151,6 +127,7 @@ def get_article_from_name(name):
             md_html=parsed,
             contents_html=headers,
             dt="Published: " + str(dt),
+            updt="Last Updated: " + str(updt),
             category=category_name,
             othercategories=db.get_categories_not(category_name),
             related=db.get_similar_articles_from_name(category_name, name),

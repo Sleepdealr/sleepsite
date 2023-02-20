@@ -4,8 +4,6 @@ from urllib.parse import urlparse
 import urllib.parse
 import database
 import argparse
-import getpass
-import application as app
 import sys
 import mistune
 from pygments import highlight
@@ -45,22 +43,15 @@ class HighlightRenderer(mistune.HTMLRenderer):
         )
 
 
-def get_article_from_id(db, id_):
-    category_name, title, dt, markdown, embed_desc, embed_img = db.get_article_from_id(id_)
-    html, headers = parse_text(markdown)
-    return category_name, title, dt, html, headers, embed_desc, embed_img
-
-
 def get_article_from_name(db, name):
-    category_name, title, dt, markdown, embed_desc, embed_img = db.get_article_from_name(name)
+    category_name, title, dt, markdown, embed_desc, embed_img, updt = db.get_article_from_name(name)
     html, headers = parse_text(markdown)
-    return category_name, title, dt, html, headers, embed_desc, embed_img
+    return category_name, title, dt, html, headers, embed_desc, embed_img, updt
 
 
 def parse_file(path):
     with open(path, "r") as f:
         unformatted = f.read()
-
     return parse_text(unformatted)
 
 
@@ -105,7 +96,6 @@ def main():
     save_parser = subparse.add_parser("save", help="Add a markdown file to the database")
     echo_parser = subparse.add_parser("echo", help="Print markdown render to stdout")
     update_parser = subparse.add_parser("update", help="Replace a markdown file")
-    export_parser = subparse.add_parser("export", help="Export a database markdown file to disk")
     subparse.add_parser("list", help="List all the markdowns in the database")
 
     for s in [save_parser, echo_parser, update_parser]:
@@ -116,7 +106,7 @@ def main():
             required=True
         )
 
-    for s in [export_parser, update_parser]:
+    for s in [update_parser]:
         s.add_argument(
             "-i", "--id",
             help="Article's id",
@@ -124,7 +114,7 @@ def main():
             required=True
         )
 
-    for s in [update_parser, save_parser]:
+    for s in [save_parser]:
         s.add_argument(
             "-c", "--category",
             help="Article category ID",
@@ -135,14 +125,6 @@ def main():
     save_parser.add_argument(
         "-t", "--title",
         help="Article title",
-        type=str,
-        required=True
-    )
-
-
-    export_parser.add_argument(
-        "-o", "--out",
-        help="Path to write the markdown file to",
         type=str,
         required=True
     )
@@ -163,11 +145,6 @@ def main():
                 with open(args["markdown"], "r") as f:
                     db.add_article(args["category"], args["title"], f.read())
                 print("Added thought...")
-
-            elif verb == "export":
-                with open(args["out"], "w") as f:
-                    f.writelines(db.get_article_from_id(args["id"])[-1])
-                print("Written to %s" % args["out"])
 
             elif verb == "update":
                 with open(args["markdown"], "r") as f:
