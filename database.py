@@ -3,6 +3,7 @@ from dataclasses import dataclass
 import datetime
 import psycopg2
 
+
 @dataclass
 class Database:
     safeLogin: bool = True
@@ -19,11 +20,11 @@ class Database:
             )
         else:
             self.__connection = psycopg2.connect(
-                user = self.user,
-                password = self.passwd,
-                database = config["postgres"]["database"],
-                host = config["postgres"]["host"],
-                port = '5432'
+                user=self.user,
+                password=self.passwd,
+                database=config["postgres"]["database"],
+                host=config["postgres"]["host"],
+                port='5432'
             )
         return self
 
@@ -35,10 +36,9 @@ class Database:
             cursor.execute("SELECT name, link FROM headerLinks ORDER BY name;")
             return cursor.fetchall()
 
-
     def get_header_articles(self, title):
         with self.__connection.cursor() as cursor:
-            cursor.execute("SELECT articleName, link FROM headerArticles WHERE articleName NOT LIKE %s;", (title, ))
+            cursor.execute("SELECT articleName, link FROM headerArticles WHERE articleName NOT LIKE %s;", (title,))
             return cursor.fetchall()
 
     def get_pfp_images(self):
@@ -50,10 +50,9 @@ class Database:
     def add_article(self, category, title, markdown):
         with self.__connection.cursor() as cursor:
             cursor.execute("""
-            INSERT INTO articles (category_id, title, markdown_text, dt)
-            VALUES ((
-                SELECT category_id FROM categories WHERE category_name = %s
-            ), %s, %s, %s);""", (category, title, markdown, datetime.datetime.now()))
+            INSERT INTO articles (article_id, category_id, title, markdown_text, dt)
+            VALUES ( (SELECT MAX(article_id) + 1 FROM articles ), %s, %s, %s, %s);""",
+                           (category, title, markdown, datetime.datetime.now()))
         self.__connection.commit()
 
     def get_article_from_id(self, id_):
@@ -62,7 +61,7 @@ class Database:
             SELECT categories.category_name, articles.title, articles.dt, articles.markdown_text, articles.embed_desc, articles.embed_img
             FROM articles INNER JOIN categories
             ON articles.category_id = categories.category_id
-            WHERE article_id = %s;""", (id_, ))
+            WHERE article_id = %s;""", (id_,))
             return cursor.fetchone()
 
     def get_article_from_name(self, name):
@@ -71,7 +70,7 @@ class Database:
             SELECT categories.category_name, articles.title, articles.dt, articles.markdown_text, articles.embed_desc, articles.embed_img
             FROM articles INNER JOIN categories
             ON articles.category_id = categories.category_id
-            WHERE lower(title) = %s;""", (name, ))
+            WHERE lower(title) = %s;""", (name,))
             return cursor.fetchone()
 
     def get_featured_articles(self):
@@ -87,7 +86,7 @@ class Database:
     def add_category(self, category):
         if not category in self.get_all_categories():
             with self.__connection.cursor() as cursor:
-                cursor.execute("INSERT INTO categories (category_name) VALUES (%s);", (category, ))
+                cursor.execute("INSERT INTO categories (category_name) VALUES (%s);", (category,))
             self.__connection.commit()
             return True
         return False
@@ -98,7 +97,7 @@ class Database:
             SELECT article_id, title, dt, category_name FROM articles
             INNER JOIN categories ON articles.category_id = categories.category_id
             WHERE category_name = %s AND article_id != %s;""",
-            (category, id_))
+                           (category, id_))
             return cursor.fetchall()
 
     def get_similar_articles_from_name(self, category, name_):
@@ -107,7 +106,7 @@ class Database:
             SELECT article_id, title, dt, category_name FROM articles
             INNER JOIN categories ON articles.category_id = categories.category_id
             WHERE category_name = %s AND lower(title) != %s;""",
-            (category, name_))
+                           (category, name_))
             return cursor.fetchall()
 
     def get_all_articles(self):
@@ -118,14 +117,14 @@ class Database:
             """)
             return cursor.fetchall()
 
-    def update_thought_markdown(self, id_, markdown):
+    def update_article_markdown(self, id_, markdown):
         with self.__connection.cursor() as cursor:
             cursor.execute("UPDATE articles SET markdown_text = %s WHERE article_id = %s;", (markdown, id_))
         self.__connection.commit()
 
     def get_categories_not(self, category_name):
         with self.__connection.cursor() as cursor:
-            cursor.execute("SELECT category_name FROM categories WHERE category_name != %s;", (category_name, ))
+            cursor.execute("SELECT category_name FROM categories WHERE category_name != %s;", (category_name,))
             return [i[0] for i in cursor.fetchall()]
 
     def get_redirect_url(self, redirect_name):
@@ -135,12 +134,10 @@ class Database:
             """, (redirect_name,))
             return cursor.fetchone()
 
-    def get_image(self, imageName):
-        return "xyz"
 
 CONFIG = configparser.ConfigParser()
 CONFIG.read("sleepweb.conf")
 
 if __name__ == "__main__":
     with Database() as db:
-        print("xyz") # implement something
+        print("xyz")  # implement something

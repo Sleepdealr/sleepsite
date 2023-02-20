@@ -83,18 +83,13 @@ def get_headers(html):
         if level < thesmallestlevel:
             thesmallestlevel = level
         headers.append((
-            # lxml.etree.tostring(node),
-            # "<p>%s</p>" % urllib.parse.unquote_plus(node.attrib["id"]),     # possibly insecure?
             urllib.parse.unquote_plus(node.attrib["id"]),
             level,  # -horrible hack
             "#%s" % node.attrib["id"])
         )
 
     headers = [(i[0], i[1] - thesmallestlevel, i[2]) for i in headers]
-    # print(headers)
-    # there is a bug here-
-    # it must start with the largest header and only go up and down in increments of one
-    #       TODO: fix it!
+
     md_template = jinja2.Template("""
 {% for text, depth, link in contents %}
 {{ "    " * depth }} - [{{ text }}]({{ link }})
@@ -111,26 +106,12 @@ def main():
     echo_parser = subparse.add_parser("echo", help="Print markdown render to stdout")
     update_parser = subparse.add_parser("update", help="Replace a markdown file")
     export_parser = subparse.add_parser("export", help="Export a database markdown file to disk")
-    list_parser = subparse.add_parser("list", help="List all the markdowns in the database")
+    subparse.add_parser("list", help="List all the markdowns in the database")
 
     for s in [save_parser, echo_parser, update_parser]:
         s.add_argument(
             "-m", "--markdown",
             help="Path to a markdown file",
-            type=str,
-            required=True
-        )
-
-    for s in [save_parser]:
-        s.add_argument(
-            "-t", "--title",
-            help="Article title",
-            type=str,
-            required=True
-        )
-        s.add_argument(
-            "-c", "--category",
-            help="Article category",
             type=str,
             required=True
         )
@@ -142,6 +123,22 @@ def main():
             type=int,
             required=True
         )
+
+    for s in [update_parser, save_parser]:
+        s.add_argument(
+            "-c", "--category",
+            help="Article category ID",
+            type=str,
+            required=True
+        )
+
+    save_parser.add_argument(
+        "-t", "--title",
+        help="Article title",
+        type=str,
+        required=True
+    )
+
 
     export_parser.add_argument(
         "-o", "--out",
@@ -174,11 +171,11 @@ def main():
 
             elif verb == "update":
                 with open(args["markdown"], "r") as f:
-                    db.update_thought_markdown(args["id"], f.read())
+                    db.update_article_markdown(args["id"], f.read())
 
             elif verb == "list":
                 for id_, title, dt, category_name in db.get_all_articles():
-                    print("%d\t%s\t%s\t%s" % (id_, title, dt, category_name))
+                    print("%d\t%-12s\t%-25s\t%s" % (id_, title, dt, category_name))
 
     elif verb == "echo":
         print(parse_file(args["markdown"]))
