@@ -135,14 +135,6 @@ def main():
             required=True
         )
 
-    for s in [save_parser, update_parser, export_parser, list_parser]:
-        s.add_argument(
-            "-u", "--username",
-            help="Username to use for the database",
-            type=str,
-            required=True
-        )
-
     for s in [export_parser, update_parser]:
         s.add_argument(
             "-i", "--id",
@@ -160,10 +152,6 @@ def main():
 
     args = vars(p.parse_args())
 
-    if "username" in args.keys():
-        args["password"] = getpass.getpass(
-            "Enter password for %s@%s: " % (args["username"], app.CONFIG["postgres"]["host"]))
-
     try:
         verb = sys.argv[1]
     except IndexError:
@@ -171,11 +159,7 @@ def main():
         exit()
 
     if verb in ["save", "export", "update", "list"]:
-        with database.Database(
-                safeLogin=False,
-                user=args["username"],
-                passwd=args["password"]
-        ) as db:
+        with database.Database() as db:
             if verb == "save":
                 if db.add_category(args["category"]):
                     print("Added category...")
