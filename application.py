@@ -83,13 +83,14 @@ def redirect_code(param):
         return
 
 
-@app.route("/discord")
+@app.route("/contact")
 def discord():
     with database.Database() as db:
         return flask.render_template(
-            "discord.html.j2",
-            **get_template_items("discord", db),
-            discord=CONFIG["discord"]["username"]
+            "contact.html.j2",
+            **get_template_items("Contact", db),
+            discord=CONFIG["contact"]["discord"],
+            email=CONFIG["contact"]["email"]
         )
 
 
