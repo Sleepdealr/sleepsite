@@ -1,0 +1,6 @@
+{% extends "template.html.j2" %}
+{% block content %}
+    <p>Contact me on discord at {{ discord }}</p>
+    {% set email_list = email.split('@') %}
+    <p>My email is {{ email_list[0] }} <b>at</b> {{ email_list[1] }}</p>
+{% endblock %}
